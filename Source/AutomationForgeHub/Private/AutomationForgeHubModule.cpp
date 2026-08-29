@@ -4,6 +4,7 @@
 #include "AutomationForgeHubStyle.h"
 #include "AutomationForgeHubToolbar.h"
 #include "AutomationForgeUpdateCheck.h"
+#include "IAutomationForgeHubModule.h"
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 #include "ToolMenus.h"
@@ -21,9 +22,18 @@ UAutomationForgeHubSettings::UAutomationForgeHubSettings()
  * up, and — a few seconds after the editor is — asks the manifest whether
  * anything on this machine has a newer release.
  */
-class FAutomationForgeHubModule : public IModuleInterface
+class FAutomationForgeHubModule : public IAutomationForgeHubModule
 {
 public:
+
+	// IAutomationForgeHubModule - what another plugin may ask of the hub, and all it may ask.
+	virtual void OpenHub() override { FAutomationForgeHubToolbar::OpenHub(); }
+
+	virtual bool IsHubApplicationInstalled() const override
+	{
+		return !FAutomationForgeHubToolbar::FindHubExecutable().IsEmpty();
+	}
+
 	virtual void StartupModule() override
 	{
 		FAutomationForgeHubStyle::Initialize();

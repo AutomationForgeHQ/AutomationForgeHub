@@ -19,6 +19,14 @@ public:
 	static void OpenHub();
 	static void OpenSettings();
 
+	/**
+	 * The hub application's path on this machine, or empty when it is not installed.
+	 *
+	 * Public because the module interface answers "is the hub actually here?" with it, and the
+	 * honest answer to that is a file that exists rather than a plugin that loaded.
+	 */
+	static FString FindHubExecutable();
+
 private:
 	static TSharedRef<SWidget> MakeMenu();
 	static FText Label();
@@ -26,7 +34,6 @@ private:
 	// By value: delegate payloads are copied in, and CreateStatic wants the parameter type to match.
 	static bool IsEnabledForProject(FString Name);
 	static void ToggleForProject(FString Name);
-	static FString FindHubExecutable();
 
 	/** Plugins toggled this session; the editor's own state does not change until restart. */
 	static TSet<FString> Pending;
