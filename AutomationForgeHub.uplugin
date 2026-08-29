@@ -1,0 +1,29 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.1\r",
+  "FriendlyName": "Automation Forge Hub",
+  "Description": "The Automation Forge menu in the editor: what is installed, what has a newer release, enable or disable each plugin for this project, and open the hub. Checks the public manifest at start and says so once when something is new. Nothing installs from here; the hub does that.",
+  "Category": "Automation Forge",
+  "CreatedBy": "Blackcode",
+  "CreatedByURL": "https://github.com/AutomationForgeHQ",
+  "DocsURL": "https://github.com/AutomationForgeHQ/automation-forge",
+  "MarketplaceURL": "",
+  "SupportURL": "https://github.com/AutomationForgeHQ/automation-forge/issues",
+  "EditorOnly": true,
+  "CanContainContent": false,
+  "IsBetaVersion": true,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "EnabledByDefault": true,
+  "Modules": [
+    {
+      "Name": "AutomationForgeHub",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit",
+      "TargetAllowList": [
+        "Editor"
+      ]
+    }
+  ]
+}
