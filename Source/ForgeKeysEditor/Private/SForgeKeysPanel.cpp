@@ -261,6 +261,28 @@ TSharedRef<SWidget> SForgeKeysPanel::BuildCard(const FForgeKeyProvider& Provider
 		]
 	];
 
+	// Who actually uses it. Only meaningful for a shared key, where the answer is not "the plugin this
+	// row is filed under" - because it is filed under General precisely so it is not asked for twice.
+	if (Provider.bShared && Provider.Consumers.Num() > 0)
+	{
+		TArray<FString> Names;
+		for (const FText& Consumer : Provider.Consumers)
+		{
+			Names.Add(Consumer.ToString());
+		}
+
+		Card->AddSlot().AutoHeight().Padding(16.f, 2.f, 0.f, 0.f)
+		[
+			SNew(STextBlock)
+			.AutoWrapText(true)
+			.Font(FAppStyle::GetFontStyle("SmallFont"))
+			.ColorAndOpacity(FSlateColor::UseSubduedForeground())
+			.Text(FText::Format(
+				NSLOCTEXT("ForgeKeys", "UsedBy", "Used by {0}"),
+				FText::FromString(FString::Join(Names, TEXT(", ")))))
+		];
+	}
+
 	if (!Provider.Purpose.IsEmpty())
 	{
 		Card->AddSlot().AutoHeight().Padding(16.f, 4.f, 0.f, 0.f)
@@ -275,6 +297,58 @@ TSharedRef<SWidget> SForgeKeysPanel::BuildCard(const FForgeKeyProvider& Provider
 				.Text(Provider.Purpose)
 			]
 		];
+	}
+
+	// The half a key page usually leaves out. Entering a token is one step; being allowed to download
+	// what it unlocks is another, and it fails much later and much less clearly.
+	if (Provider.AccessRequirements.Num() > 0)
+	{
+		Card->AddSlot().AutoHeight().Padding(16.f, 6.f, 0.f, 0.f)
+		[
+			SNew(STextBlock)
+			.Font(FAppStyle::GetFontStyle("SmallFontBold"))
+			.ColorAndOpacity(FSlateColor(WarnColour))
+			.Text(LOCTEXT("AccessAlso", "A token is not access. You must also be granted:"))
+		];
+
+		for (const FForgeKeyAccessRequirement& Requirement : Provider.AccessRequirements)
+		{
+			const FString Url = Requirement.Url;
+
+			TSharedRef<SHorizontalBox> Line = SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center)
+				[
+					SNew(STextBlock)
+					.Font(FAppStyle::GetFontStyle("SmallFont"))
+					.ColorAndOpacity(FSlateColor::UseSubduedForeground())
+					.Text(FText::Format(LOCTEXT("AccessItem", "\x2022  {0}"), Requirement.What))
+				];
+
+			if (!Url.IsEmpty())
+			{
+				Line->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(8.f, 0.f, 0.f, 0.f)
+				[
+					SNew(SHyperlink)
+					.Text(Requirement.bReviewedByHand
+						? LOCTEXT("RequestAccess", "Request access")
+						: LOCTEXT("AcceptTerms", "Accept the terms"))
+					.OnNavigate_Lambda([Url]() { FPlatformProcess::LaunchURL(*Url, nullptr, nullptr); })
+				];
+			}
+
+			if (Requirement.bReviewedByHand)
+			{
+				Line->AddSlot().AutoWidth().VAlign(VAlign_Center).Padding(8.f, 0.f, 0.f, 0.f)
+				[
+					SNew(STextBlock)
+					.Font(FAppStyle::GetFontStyle("SmallFont"))
+					.ColorAndOpacity(FSlateColor::UseSubduedForeground())
+					.Text(LOCTEXT("ByHand", "(reviewed by a human - start it early)"))
+				];
+			}
+
+			Card->AddSlot().AutoHeight().Padding(24.f, 2.f, 0.f, 0.f)[Line];
+		}
 	}
 
 	// Paste, save, clear, test.

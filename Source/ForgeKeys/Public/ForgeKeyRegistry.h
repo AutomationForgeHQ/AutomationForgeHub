@@ -9,6 +9,28 @@
 using FForgeKeyTestResult = TFunction<void(bool /*bOk*/, FText /*Message*/)>;
 
 /**
+ * A gated resource this key must *also* be granted access to.
+ *
+ * **A token is not access, and saying only the first half is how people lose an afternoon.** A valid
+ * Hugging Face token whose account has not accepted a model's terms installs perfectly and then fails
+ * at the point of use, nowhere near the key page that looked correct.
+ *
+ * One per consumer that needs one, accumulated by the registry, because a shared key can front two
+ * completely different grants: Meta review Llama 3 by hand and take days, NVIDIA's terms are a click.
+ */
+struct FForgeKeyAccessRequirement
+{
+	/** What must be granted, and for what: "Llama 3, for Kimodo's text encoder". */
+	FText What;
+
+	/** Where to ask. Rendered as a link. */
+	FString Url;
+
+	/** True where a human reviews the request, so it is worth starting early rather than at the end. */
+	bool bReviewedByHand = false;
+};
+
+/**
  * One key a plugin asks for, described by the plugin that owns it.
  *
  * **Pure data and closures, on purpose.** A plugin fills this in and hands it over; it never calls
@@ -22,14 +44,39 @@ using FForgeKeyTestResult = TFunction<void(bool /*bOk*/, FText /*Message*/)>;
  */
 struct FForgeKeyProvider
 {
-	/** Unique across the registry. Conventionally "<Plugin>.<Service>". */
+	/**
+	 * Unique across the registry. Conventionally "<Plugin>.<Service>".
+	 *
+	 * A **shared** key drops the plugin half and is just the service - "Runpod", "HuggingFace" - so
+	 * that every plugin wanting it registers the same id and the page shows one row rather than one
+	 * per plugin.
+	 */
 	FName Id;
 
 	/** What to call it: "Uthana", "ElevenLabs". */
 	FText DisplayName;
 
-	/** Which plugin wants it. Groups the page. */
+	/** Which plugin wants it. Groups the page. Forced to "General" for a shared key. */
 	FText Owner;
+
+	/**
+	 * True when this key is an account a *person* has rather than something one plugin owns.
+	 *
+	 * A Runpod key or a Hugging Face token is the same key whichever plugin asks, so asking twice is
+	 * asking the same question twice and leaves two copies to keep in step. A shared key is registered
+	 * under a plugin-free id, stored in one family-wide vault entry, and shown once under **General**
+	 * with the plugins that use it named beneath.
+	 */
+	bool bShared = false;
+
+	/**
+	 * Which installed plugins consume this key.
+	 *
+	 * Accumulated by the registry rather than declared by any one plugin: each plugin adds itself as
+	 * it registers, so the list describes what is actually installed rather than what somebody
+	 * remembered to write down.
+	 */
+	TArray<FText> Consumers;
 
 	/** One line: what this key unlocks, and what happens without it. */
 	FText Purpose;
@@ -43,6 +90,15 @@ struct FForgeKeyProvider
 
 	/** Where a person gets one. Rendered as a link; may be empty. */
 	FString HelpUrl;
+
+	/**
+	 * What this key must additionally be *granted access to*, if anything.
+	 *
+	 * Accumulated across consumers by the registry rather than owned by one plugin, for the same
+	 * reason Consumers is: with two plugins installed, both grants are needed and neither plugin
+	 * knows about the other. See FForgeKeyAccessRequirement.
+	 */
+	TArray<FForgeKeyAccessRequirement> AccessRequirements;
 
 	/** Shown so a person can find the entry themselves. Display only. */
 	FString VaultEntryName;
