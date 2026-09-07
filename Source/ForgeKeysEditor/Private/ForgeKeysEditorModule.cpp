@@ -34,6 +34,9 @@ public:
 			.SetDisplayName(LOCTEXT("TabTitle", "Automation Forge Keys"))
 			.SetTooltipText(LOCTEXT("TabTooltip", "Every key the installed Automation Forge plugins ask for."))
 			.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Lock"))
+			// Hidden from the auto-populated Tools list: the family's "Automation Forge" section is
+			// the one entry.
+			.SetMenuType(ETabSpawnerMenuType::Hidden)
 			.SetGroup(WorkspaceMenu::GetMenuStructure().GetToolsCategory());
 
 		ToolMenusHandle = UToolMenus::RegisterStartupCallback(
