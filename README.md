@@ -65,9 +65,6 @@ if (IForgeKeysModule* Keys = IForgeKeysModule::GetOrLoad())   // null when not i
 
 Unregister from `ShutdownModule`, or a hot reload leaves a closure pointing at unloaded code.
 
-Unregister from `ShutdownModule`, or a hot reload leaves a closure pointing at
-unloaded code.
-
 **UBT will warn about this, and the warning is wrong.** You will see:
 
 ```
@@ -87,10 +84,6 @@ Select-String -Path UnrealEditor-MotionForge.dll -Pattern "UnrealEditor-ForgeKey
 
 `bOptional` matters: a key that is genuinely not needed in every mode — a runner on loopback, say —
 should say so, or the page reports a working setup as incomplete.
-
-`bOptional` matters: a key that is genuinely not needed in every mode - a runner
-on loopback, say - should say so, or the page reports a working setup as
-incomplete.
 
 ### The same keys, outside the editor
 

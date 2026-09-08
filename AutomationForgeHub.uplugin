@@ -1,9 +1,9 @@
 {
   "FileVersion": 3,
   "Version": 2,
-  "VersionName": "0.2.2",
+  "VersionName": "0.2.3",
   "FriendlyName": "Automation Forge Hub",
-  "Description": "The Automation Forge menu in the editor: what is installed, what has a newer release, enable or disable each plugin for this project, and open the hub. Checks the public manifest at start and says so once when something is new. Nothing installs from here; the hub does that.",
+  "Description": "The Automation Forge menu in the editor: what is installed, what has a newer release, enable or disable each plugin for this project, the shared Keys panel for every plugin's API keys, and open the hub. Checks the public manifest at start and says so once when something is new. Nothing installs from here; the hub does that.",
   "Category": "Automation Forge",
   "CreatedBy": "Bojan Andrejek",
   "CreatedByURL": "https://kovati.dev",
