@@ -1,4 +1,4 @@
-// Copyright Blackcode SA. All rights reserved.
+// Copyright Bojan Andrejek / MetaWorx LLC. All rights reserved.
 
 #include "AutomationForgeHubToolbar.h"
 #include "AutomationForgeHubSettings.h"
